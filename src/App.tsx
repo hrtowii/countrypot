@@ -4,18 +4,35 @@ import {
   AutoProcessor,
   RawImage,
 } from "@huggingface/transformers";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 env.backends.onnx.wasm.proxy = false;
 
-const model_id = "Xenova/modnet";
+// const model_id = "Xenova/modnet";
 let model, processor;
 
 // Initialize model and processor outside of component to avoid reloading
 const initializeModel = async () => {
   if (!model || !processor) {
-    model = await AutoModel.from_pretrained(model_id, { device: "webgpu" });
-    processor = await AutoProcessor.from_pretrained(model_id);
+    // model = await AutoModel.from_pretrained(model_id, { device: "webgpu" });
+    // processor = await AutoProcessor.from_pretrained(model_id);
+    model = await AutoModel.from_pretrained('briaai/RMBG-1.4', {
+      config: { model_type: 'custom' },
+    });
+    processor = await AutoProcessor.from_pretrained('briaai/RMBG-1.4', {
+        config: {
+            do_normalize: true,
+            do_pad: false,
+            do_rescale: true,
+            do_resize: true,
+            image_mean: [0.5, 0.5, 0.5],
+            feature_extractor_type: "ImageFeatureExtractor",
+            image_std: [1, 1, 1],
+            resample: 2,
+            rescale_factor: 0.00392156862745098,
+            size: { width: 1024, height: 1024 },
+        }
+    });
   }
 };
 
